@@ -198,17 +198,56 @@ def buy(currency: str, amount: float) -> str:
 
 @log_action("SELL")
 def sell(currency: str, amount: float) -> str:
+    """Продает указанное количество валюты в обмен на базовую валюту."""
     if amount <= 0:
         raise ValueError("'amount' должен быть положительным числом.")
     user = get_current_user()
     if not user:
         raise PermissionError("Сначала выполните login.")
+
+    currency_to_sell = get_currency(currency)
+    base_currency_code = settings.get("DEFAULT_BASE_CURRENCY")
+
+    if currency_to_sell.code == base_currency_code:
+        raise ValueError(
+            f"Продажа базовой валюты ({base_currency_code}) не имеет смысла в данной операции."
+        )
+
     portfolio = _load_portfolio(user)
-    wallet = portfolio.get_wallet(currency)
-    old_balance = wallet.balance
-    wallet.withdraw(amount)
+
+    # Списание с продаваемого кошелька
+    wallet_to_sell = portfolio.get_wallet(currency_to_sell.code)
+    wallet_to_sell.withdraw(amount)
+
+    # Получение курса для расчета выручки
+    rates_snapshot = db_manager.read("rates")
+    pair_key = f"{currency_to_sell.code}_{base_currency_code}"
+    rate_info = rates_snapshot.get("pairs", {}).get(pair_key)
+
+    if not rate_info:
+        # Если прямого курса нет, пытаемся найти обратный
+        reverse_pair_key = f"{base_currency_code}_{currency_to_sell.code}"
+        reverse_rate_info = rates_snapshot.get("pairs", {}).get(reverse_pair_key)
+        if not reverse_rate_info:
+            raise RateNotFoundError(code=pair_key)
+        revenue = amount / reverse_rate_info["rate"]
+    else:
+        revenue = amount * rate_info["rate"]
+
+    # Зачисление на кошелек базовой валюты
+    base_wallet = (
+        portfolio.get_wallet(base_currency_code)
+        if base_currency_code in portfolio.wallets
+        else portfolio.add_wallet(base_currency_code)
+    )
+    base_wallet.deposit(revenue)
+
     _save_portfolio(portfolio)
-    return f"Продажа выполнена: {amount:.4f} {currency}\n- {currency}: было {old_balance:.4f} → стало {wallet.balance:.4f}"
+
+    return (
+        f"✓ Продажа выполнена: {amount:.4f} {currency_to_sell.code}\n"
+        f"↑ Зачислено: {revenue:.2f} {base_currency_code}"
+    )
 
 
 def get_rate(from_currency: str, to_currency: str) -> str:
