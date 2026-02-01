@@ -50,8 +50,12 @@ _currency_registry: Dict[str, Currency] = {
     "USD": FiatCurrency(name="US Dollar", code="USD", issuing_country="United States"),
     "EUR": FiatCurrency(name="Euro", code="EUR", issuing_country="Eurozone"),
     "RUB": FiatCurrency(name="Russian Ruble", code="RUB", issuing_country="Russia"),
-    "BTC": CryptoCurrency(name="Bitcoin", code="BTC", algorithm="SHA-256", market_cap=1.12e12),
-    "ETH": CryptoCurrency(name="Ethereum", code="ETH", algorithm="Ethash", market_cap=3.5e11),
+    "BTC": CryptoCurrency(
+        name="Bitcoin", code="BTC", algorithm="SHA-256", market_cap=1.12e12
+    ),
+    "ETH": CryptoCurrency(
+        name="Ethereum", code="ETH", algorithm="Ethash", market_cap=3.5e11
+    ),
 }
 
 
@@ -61,7 +65,7 @@ def get_currency(code: str) -> Currency:
     """
     if not is_valid_currency_code(code):
         raise CurrencyNotFoundError(code=code)
-    
+
     currency = _currency_registry.get(code.upper())
     if currency is None:
         raise CurrencyNotFoundError(code=code)
@@ -70,4 +74,6 @@ def get_currency(code: str) -> Currency:
 
 def get_all_currencies_info() -> str:
     """Возвращает информацию о всех валютах в реестре."""
-    return "\n".join([currency.get_display_info() for currency in _currency_registry.values()])
+    return "\n".join(
+        [currency.get_display_info() for currency in _currency_registry.values()]
+    )

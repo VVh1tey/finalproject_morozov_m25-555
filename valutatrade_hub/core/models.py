@@ -6,10 +6,18 @@ from typing import Dict
 from valutatrade_hub.core.currencies import Currency, get_currency
 from valutatrade_hub.core.exceptions import InsufficientFundsError
 
+
 class User:
     """Класс User представляет пользователя системы."""
 
-    def __init__(self, user_id: int, username: str, hashed_password: str, salt: str, registration_date: datetime):
+    def __init__(
+        self,
+        user_id: int,
+        username: str,
+        hashed_password: str,
+        salt: str,
+        registration_date: datetime,
+    ):
         self._user_id = user_id
         self._username = username
         self._hashed_password = hashed_password
@@ -47,7 +55,7 @@ class User:
         return {
             "user_id": self.user_id,
             "username": self.username,
-            "registration_date": self.registration_date.isoformat()
+            "registration_date": self.registration_date.isoformat(),
         }
 
     def change_password(self, new_password: str):
@@ -55,11 +63,16 @@ class User:
         if len(new_password) < 4:
             raise ValueError("Пароль должен быть не короче 4 символов.")
         self._salt = uuid.uuid4().hex
-        self._hashed_password = hashlib.sha256(f"{new_password}{self._salt}".encode()).hexdigest()
+        self._hashed_password = hashlib.sha256(
+            f"{new_password}{self._salt}".encode()
+        ).hexdigest()
 
     def verify_password(self, password: str) -> bool:
         """Проверяет введенный пароль на совпадение."""
-        return self._hashed_password == hashlib.sha256(f"{password}{self._salt}".encode()).hexdigest()
+        return (
+            self._hashed_password
+            == hashlib.sha256(f"{password}{self._salt}".encode()).hexdigest()
+        )
 
 
 class Wallet:
@@ -94,7 +107,9 @@ class Wallet:
         if not isinstance(amount, (int, float)) or amount <= 0:
             raise ValueError("Сумма снятия должна быть положительным числом.")
         if amount > self.balance:
-            raise InsufficientFundsError(code=self.currency.code, available=self.balance, required=amount)
+            raise InsufficientFundsError(
+                code=self.currency.code, available=self.balance, required=amount
+            )
         self.balance -= amount
 
 
@@ -117,7 +132,7 @@ class Portfolio:
         """Добавляет новый кошелек в портфель, если его еще нет."""
         if currency_code in self._wallets:
             raise ValueError(f"Кошелек для валюты '{currency_code}' уже существует.")
-        
+
         currency = get_currency(currency_code)
         wallet = Wallet(currency=currency)
         self._wallets[currency_code] = wallet

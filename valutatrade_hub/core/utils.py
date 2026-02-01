@@ -2,6 +2,7 @@ import hashlib
 import re
 import uuid
 
+
 def hash_password(password: str) -> tuple[str, str]:
     """Хеширует пароль с использованием соли."""
     salt = uuid.uuid4().hex
