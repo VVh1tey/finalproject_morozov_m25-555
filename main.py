@@ -1,6 +1,7 @@
+from valutatrade_hub.cli.interface import cli
+
 def main():
-    print("Currency Wallet Application")
-    print("Project structure is ready!")
+    cli()
 
 if __name__ == "__main__":
     main()
