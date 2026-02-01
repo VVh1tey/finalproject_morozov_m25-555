@@ -21,7 +21,7 @@
 ### Установка
 1.  **Клонировать репозиторий:**
     ```bash
-    git clone <URL вашего репозитория>
+    git clone https://github.com/VVh1tey/finalproject_morozov_m25-555
     cd finalproject_morozov_m25-555
     ```
 
