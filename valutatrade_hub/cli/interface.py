@@ -26,14 +26,14 @@ def print_help():
     table.align["Пример"] = "l"
     
     commands = [
-        ("register --username <имя> --password <пароль>", "Регистрация нового пользователя", "register --username alex --password 1234"),
-        ("login --username <имя> --password <пароль>", "Вход в систему", "login --username alex --password 1234"),
+        ("register --username <имя> --password <пароль>", "Регистрация нового пользователя", "register --username xx --password 1234"),
+        ("login --username <имя> --password <пароль>", "Вход в систему", "login --username xx --password 1234"),
         ("show-portfolio [--base USD]", "Показать текущий портфель", "show-portfolio --base EUR"),
         ("buy --currency <код> --amount <число>", "Купить валюту", "buy --currency BTC --amount 0.1"),
         ("sell --currency <код> --amount <число>", "Продать валюту", "sell --currency BTC --amount 0.1"),
         ("get-rate --from <код> --to <код>", "Получить курс валюты", "get-rate --from USD --to EUR"),
-        ("update-rates", "Обновить кэш курсов валют (не реализовано)", "update-rates"),
-        ("show-rates", "Показать актуальные курсы (не реализовано)", "show-rates"),
+        ("update-rates", "↻ Обновить кэш курсов валют", "update-rates"),
+        ("show-rates", "📊 Показать актуальные курсы из кэша", "show-rates --top 5"),
         ("currencies", "Показать список доступных валют", "currencies"),
         ("help", "Показать это меню", "help"),
         ("exit", "Выйти из программы", "exit"),
@@ -97,13 +97,13 @@ def cli_command(required_args: Optional[List[str]] = None, optional_args: Option
                 if result:
                     print(result)
             except (ValueError, PermissionError) as e:
-                print(f"[-] Ошибка: {e}")
+                print(f"! Ошибка: {e}")
             except InsufficientFundsError as e:
-                print(f"[-] Ошибка: {e}")
+                print(f"{e}")
             except (CurrencyNotFoundError, RateNotFoundError, ApiRequestError) as e:
-                print(f"[-] Ошибка: {e}")
+                print(f"!! Ошибка: {e}")
             except Exception as e:
-                print(f"[!] Неожиданная системная ошибка: {type(e).__name__} - {e}")
+                print(f"!! Неожиданная системная ошибка: {type(e).__name__} - {e}")
         return wrapper
     return decorator
 
@@ -114,7 +114,7 @@ def cli():
 
     while True:
         try:
-            user_input = prompt.string("\n> ").strip()
+            user_input = prompt.string("> ").strip()
             if not user_input:
                 continue
 
@@ -132,11 +132,11 @@ def cli():
                 print(get_all_currencies_info())
             elif cmd == "register":
                 @cli_command(required_args=["--username", "--password"])
-                def cmd_register(username, password): return usecase.register(username, password)
+                def cmd_register(username, password): return f"✓ {usecase.register(username, password)}"
                 cmd_register(params)
             elif cmd == "login":
                 @cli_command(required_args=["--username", "--password"])
-                def cmd_login(username, password): return usecase.login(username, password)
+                def cmd_login(username, password): return f"✓ {usecase.login(username, password)}"
                 cmd_login(params)
             elif cmd == "show-portfolio":
                 @cli_command(optional_args={"--base": settings.get("DEFAULT_BASE_CURRENCY")})

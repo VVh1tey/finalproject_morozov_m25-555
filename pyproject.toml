@@ -25,5 +25,5 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.scripts]   
-project = "valutatrade_hub.cli.interface:cli"
-wallet = "valutatrade_hub.cli.interface:cli"
+project = "main:main"
+wallet = "main:main"

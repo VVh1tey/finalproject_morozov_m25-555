@@ -18,7 +18,7 @@ class InsufficientFundsError(Exception):
         self.code = code
         self.available = available
         self.required = required
-        super().__init__(f"Недостаточно средств: доступно {available} {code}, требуется {required} {code}")
+        super().__init__(f"!! Недостаточно средств\n@ Доступно: {available:.2f} {code}\nТребуется: {required:.2f} {code}")
 
 class RateNotFoundError(Exception):
     """Курс валюты не найден."""
