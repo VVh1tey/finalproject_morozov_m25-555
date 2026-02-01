@@ -73,3 +73,6 @@ set EXCHANGERATE_API_KEY=ВАШ_КЛЮЧ_ЗДЕСЬ
 ## Команды
 
 Для получения полного списка команд и их описания, используйте команду `help` внутри приложения.
+
+## ASCIINEMA demo
+https://asciinema.org/a/zf8I3jJkmGbqdXrI
