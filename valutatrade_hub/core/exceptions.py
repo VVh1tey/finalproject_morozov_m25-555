@@ -4,13 +4,13 @@ class ApiRequestError(Exception):
     """Ошибка при запросе к API."""
     def __init__(self, reason: str):
         self.reason = reason
-        super().__init__(f"API request failed: {reason}")
+        super().__init__(f"Ошибка при обращении к внешнему API: {reason}")
 
 class CurrencyNotFoundError(Exception):
     """Валюта не найдена."""
     def __init__(self, code: str):
         self.code = code
-        super().__init__(f"Currency '{code}' not found.")
+        super().__init__(f"Неизвестная валюта '{code}'")
 
 class InsufficientFundsError(Exception):
     """Недостаточно средств на счете."""
@@ -18,10 +18,10 @@ class InsufficientFundsError(Exception):
         self.code = code
         self.available = available
         self.required = required
-        super().__init__(f"Insufficient funds for {code}. Available: {available}, Required: {required}")
+        super().__init__(f"Недостаточно средств: доступно {available} {code}, требуется {required} {code}")
 
 class RateNotFoundError(Exception):
     """Курс валюты не найден."""
     def __init__(self, code: str):
         self.code = code
-        super().__init__(f"Rate for '{code}' not found.")
+        super().__init__(f"Курс для '{code}' не найден.")
